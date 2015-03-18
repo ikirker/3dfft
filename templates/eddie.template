@@ -1,0 +1,45 @@
+# Uses Here Document syntax to set header and perexec variables.
+# Use of single quotes prevents evaluation of any of the variables within.
+
+cat > header <<'SETVAR'
+#!/bin/sh
+########################################
+#                                      #
+# SGE MPI job script for ECDF Cluster  #
+#                                      #
+# by ECDF System Team                  #
+# ecdf-systems-team@lists.ed.ac.uk     #
+#                                      #
+########################################
+
+# Grid Engine options
+
+#$ -N %^EXEC%^-%^CPUS%^
+#$ -cwd
+#$ -l h_rt=00:50:00
+#$ -pe infinipath %^CPUS%^ 
+#$ -R y
+
+# Initialise environment module
+
+. /etc/profile.d/modules.sh
+
+# Use Intel compiler
+
+module load intel/icc/64
+module load infinipath/core/intel/2.1
+module load fftw2/intel/64/double/2.1.5
+module load fftw/intel/64/3.1.2
+module load intel/mkl/64/10.0.1.014
+
+
+
+# Run the program
+
+date
+SETVAR
+
+cat > perexec <<'SETVAR'
+mpirun -m $TMPDIR/machines -np $NSLOTS ./%^EXEC%^ -x%^EXTENT%^ -d%^DECOMP%^
+date
+SETVAR

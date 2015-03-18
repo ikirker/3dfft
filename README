@@ -1,0 +1,72 @@
+=== 3D FFT Benchmark ===
+
+Unfortunately, I didn't really have time to learn how to
+ use autoconf for this, so some manual editing of the Makefile 
+ may be required.
+
+The list of steps required to run this consist of:
+1) Compile all versions.
+2) Make a template file for the job scripts.
+3) Run batchmaker.
+4) Move jobs and executables to a staging directory if necessary.
+5) Submit jobs.
+
+== 1 - Compile all versions ==
+In an ideal environment, you can just:
+make LIB=fftw3
+make sweep
+make LIB=fftw2
+make sweep
+make LIB=essl
+make sweep
+make LIB=mkl
+make sweep
+make LIB=acml
+
+... whichever apply on the system. 
+
+Other settings are:
+CC=[gcc|pgcc|xlc|icc|xlc-bg]
+	Sets the compiler type underlying the usual MPI compiler wrapper,
+	 for purposes of compiler flags, defaults to gcc.
+	 If you have none of these, you can set the flags used for compilation
+	 separately using:
+
+CFLAGS=
+	By default, contains optimisation flags appropriate for the above.
+
+MPICC=
+	Contains the name of the MPI compiler wrapper. Defaults to 'mpicc'.
+	
+EXTRAFLAGS=
+	Empty by default, added to every compilation line. Use for flags you
+	 need to include to specify extra libraries needed to link against on
+	 your system, or -L and -I flags to specify library locations.
+	 
+The makefile assumes maximum capabilities for each library by default 
+ (for SYSTEM=generic, which means that FFTW2 is assumed to be compiled
+ with MPI support, without type-prefixes (use LIB=dfftw2 otherwise), that
+ MKL includes parallel support, and that ESSL includes PESSL.
+
+== 2 - Make a template file ==
+There are a number of templates in the templates directory which may be able
+ to be reconfigurable to your batch system - you may be able to take the PBS
+ or SGE one directly and merely alter the account code. template.template
+ contains a list of all the keytags that batchmaker replaces, as well as a
+ non-specific template form.
+
+== 3 - Run batchmaker ==
+./batchmaker.sh fft-*
+	 will usually do the job, assuming you're in the directory where you 
+	 compiled the fft executables. Batchmaker is pretty self-explanatory
+	 to use, and generates a pile of job-version-cpucount.nys files, which
+	 are job files to be submitted.
+
+== 4 - Move files to staging directory ==
+If you need to, move all the *.nys files and the fft-* executables to a
+ staging directory at this point...
+
+== 5 - Submit ==
+And submit them, however you do that on your system.
+
+

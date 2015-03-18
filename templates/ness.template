@@ -1,0 +1,19 @@
+# Uses Here Document syntax to set header and perexec variables.
+# Use of single quotes prevents evaluation of any of the variables within.
+
+cat > header <<'SETVAR'
+#!/bin/bash
+#$-cwd
+#$-V
+#$-pe mpi 16
+#$-A sge 
+#$-l h_rt=01:00:00
+
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/export/intel/mkl/10.0.1.014/lib/em64t
+date
+SETVAR
+
+cat > perexec <<'SETVAR'
+mpiexec -n %^CPUS%^ ./%^EXEC%^ -x%^EXTENT%^ -d%^DECOMP%^
+date
+SETVAR

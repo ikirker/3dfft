@@ -1,0 +1,32 @@
+# Uses Here Document syntax to set header and perexec variables.
+# Use of single quotes prevents evaluation of any of the variables within.
+
+cat > header <<'SETVAR'
+#!/bin/bash
+#
+#@ job_name = job_%^EXEC%^_c%^CPUS%^_VN
+#@ chips = %^HALFCPUS%^
+#@ wall_clock_limit = 00:50:00
+#@ account_no = b00-msc
+#
+#
+#@ output = $(job_name).$(schedd_host).$(jobid).out
+#@ error  = $(job_name).$(schedd_host).$(jobid).err
+#
+#@ bg_size = $(chips)
+#@ bg_connection = PREFER_TORUS
+#@ job_type = BLUEGENE
+#@ environment = $MMCS_SERVER_IP;$BACKEND_MPIRUN_PATH
+#@ class = BGL
+#@ queue
+
+SETVAR
+
+#################
+
+cat > perexec <<'SETVAR'
+mpirun -mode VN -np %^CPUS%^ -exe /home/b00/ikirker/work/%^EXEC%^ \
+      -cwd /home/b00/ikirker/work \
+      -args " -x%^EXTENT%^ -d%^DECOMP%^"
+	  
+SETVAR

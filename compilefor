@@ -1,0 +1,111 @@
+#!/bin/bash
+####################################
+# Script to compile up the correct #
+#  versions of the FFT benchmark   #
+#  for each platform.              #
+#                                  #
+# 21/6/08, Ian Kirker              #
+####################################
+
+# Which platform?
+case "$1" in
+	"hector") 
+		#Compile all versions:
+		source /opt/modules/3.1.6/init/bash
+		module unload pgi/7.0.4
+		module load pgi/7.1.6
+		make clean
+		module load fftw/3.1.1
+		make LIB=fftw3 SYSTEM=hector CC=pgcc MPICC=cc fft
+		make LIB=fftw3 SYSTEM=hector CC=pgcc MPICC=cc fft
+		module unload fftw/3.1.1
+		make sweep
+		module load fftw/2.1.5
+		make LIB=fftw2 SYSTEM=hector CC=pgcc MPICC=cc fft
+		make LIB=fftw2 SYSTEM=hector CC=pgcc MPICC=cc fft
+		module load fftw/2.1.5
+		make sweep
+		# Note: using acml 4.0.1 with a pre7.1 version of pgi
+		#  gives compilation errors.
+		module load acml/4.0.1 
+		make LIB=acml SYSTEM=hector CC=pgcc MPICC=cc fft
+		make LIB=acml SYSTEM=hector CC=pgcc MPICC=cc fft
+		module unload acml/4.0.1
+		make sweep
+		
+		#Move to staging dir:
+		mv fft-fftw3 fft-fftw2 fft-acml ~/workspace/
+		
+		#Notify the user of this in case they 
+		#  think their binaries have just disappeared.
+		echo "Binaries moved to ~/workspace/"
+		;;
+	"hpcx")
+		make clean
+ 		make LIB=fftw3 SYSTEM=hpcx CC=xlc MPICC=mpcc_r fft
+		make sweep
+		make LIB=fftw2 SYSTEM=hpcx CC=xlc MPICC=mpcc_r fft
+		make sweep
+		make LIB=essl SYSTEM=hpcx CC=xlc MPICC=mpcc_r fft
+		make sweep
+		;;
+	"ness")
+		make clean
+		make LIB=fftw3 SYSTEM=ness CC=pgcc fft
+		make sweep
+		make LIB=fftw2 SYSTEM=ness CC=pgcc fft
+		make sweep
+		make LIB=acml SYSTEM=ness CC=pgcc fft
+		make sweep
+		make LIB=mkl SYSTEM=ness CC=pgcc fft
+		make sweep
+		;;
+	"eddie")
+		. /etc/profile.d/modules.sh
+		module load intel/icc/64
+		module load infinipath/core/intel/2.1
+		module load fftw2/intel/64/double/2.1.5
+		module load fftw/intel/64/3.1.2
+		module load intel/mkl/64/10.0.1.014
+		make clean
+		make LIB=fftw3 SYSTEM=eddie CC=icc fft
+		make sweep
+		make LIB=fftw2 SYSTEM=eddie CC=icc fft
+		make sweep
+		make LIB=mkl SYSTEM=eddie CC=icc fft
+		make sweep
+		;;
+	"bluesky")
+		make clean
+		make LIB=fftw3 SYSTEM=bluegene CC=xlc_bg MPICC=mpixlc fft
+		make sweep
+		make LIB=fftw2 SYSTEM=bluegene CC=xlc_bg MPICC=mpixlc fft
+		make sweep
+		make LIB=essl SYSTEM=bluegene CC=xlc_bg MPICC=mpixlc fft
+		make sweep
+		;;
+	"generic")
+		make clean
+		make LIB=fftw3 fft
+		make sweep
+		make LIB=fftw2 fft
+		make sweep
+		make LIB=essl fft
+		make sweep
+		make LIB=mkl fft
+		make sweep
+		make LIB=acml fft
+		make sweep
+		;;
+	"marenostrum")
+		make clean
+		make LIB=fftw3 SYSTEM=marenostrum CC=xlc fft
+		make sweep
+		make LIB=fftw2 SYSTEM=marenostrum CC=xlc fft
+		make sweep
+		make LIB=essl SYSTEM=marenostrum CC=xlc fft
+		make sweep
+		;;
+esac
+
+	

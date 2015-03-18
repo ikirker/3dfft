@@ -1,0 +1,16 @@
+# Uses Here Document syntax to set header and perexec variables.
+# Use of single quotes prevents evaluation of any of the variables within.
+
+cat > header <<'SETVAR'
+#!/bin/bash
+#$-cwd
+#$-V
+#$-pe mpi %^CPUS%^
+#$-A sge 
+#$-l h_rt=01:00:00
+
+SETVAR
+
+cat > perexec <<'SETVAR'
+mpiexec -n %^CPUS%^ ./%^EXEC%^ -x%^EXTENT%^ -d%^DECOMP%^
+SETVAR

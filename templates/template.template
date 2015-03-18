@@ -1,0 +1,36 @@
+################################################
+#  Template Template File for Batchmaker       #
+#                                              #
+#   Ian Kirker, ian.kirker@gmail.com           #
+################################################
+
+# Uses Here Document syntax to set header and perexec variables.
+# Use of single quotes prevents evaluation of any of the variables within.
+
+# Certain keys are replaced by batchmaker when the actual job files are made -
+#  These keys are surrounded by %^ %^, for example, %^CPUS%^.
+# List is:
+#  %^CPUS%^   -> number of tasks required.
+#  %^EXEC%^   -> name (not path) of the executable to run.
+#                I assume that all executables are going to be in the same
+#                  place.
+#  %^EXTENT%^ -> size along one dimension of the global array, provided as
+#                 an argument to the executable at runtime.
+#  %^DECOMP%^ -> method to use to decompose the global array.
+#  %^COUNT%^  -> number this step is in the jobfile. Mostly provided for the
+#                 BlueGene jobfile. This has value 0 in the header.
+
+cat > header <<'SETVAR'
+#In here goes everything you'd need to specify at the top of a job file -
+# typically, things like account codes and miscellaneous environment settings.
+SETVAR
+
+############
+
+cat > perexec <<'SETVAR'
+#Batchmaker makes a jobfile that contains all the jobs for one
+# quantity of processors - this part contains everything that you
+# need for one executable to run. Typically this will be something
+# simple like:
+mpirun -n %^CPUS%^ ./%^EXEC%^ -x%^EXTENT%^ -d%^DECOMP%^
+SETVAR

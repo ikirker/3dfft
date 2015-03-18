@@ -1,0 +1,40 @@
+# Uses Here Document syntax to set header and perexec variables.
+# Use of single quotes prevents evaluation of any of the variables within.
+
+cat > header <<'SETVAR'
+#@ shell = /bin/ksh
+#
+# To change the job name, uncomment this line.
+#@ job_name = %^EXEC%^-%^CPUS%^
+#
+#@ job_type = parallel
+#@ tasks_per_node = 16 
+#@ cpus = %^CPUS%^ 
+#@ node_usage = not_shared
+#
+#@ network.MPI = csss,shared
+#
+#@ wall_clock_limit = 01:00:00
+#@ account_no = z004-m13
+#
+#@ output = $(job_name).$(schedd_host).$(jobid).out
+#@ error  = $(job_name).$(schedd_host).$(jobid).err
+#@ notification = never
+#
+#@ queue
+
+# suggested environment settings:
+export MP_SHARED_MEMORY=yes
+export MP_USE_BULK_XFER=yes
+export MEMORY_AFFINITY=MCM
+export TASK_AFFINITY=MCM
+
+date
+SETVAR
+
+#######################
+
+cat > perexec <<'SETVAR'
+poe ./%^EXEC%^ -x%^EXTENT%^ -d%^DECOMP%^
+date
+SETVAR
