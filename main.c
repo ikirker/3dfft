@@ -175,12 +175,15 @@ int main (int argc, char ** argv) {
 
 
 	/********* Output and finalisation **********/
-	if ( ( skipFFT==1 ) || ( skip==1 ) || ( printOut == 1 ) )
-	{ /* If we're skipping bits or requesting it, print the data instead. */
-		printData( data, extent, domainSize, decompDims, cartCoords );
-	} else {
-		checkData( data, extent, domainSize, cartCoords, TOLERANCE, commAll );
-	}
+	
+    if ( printOut == 1 )
+    { /* If we're skipping bits or requesting it, print the data instead. */
+        printData( data, extent, domainSize, decompDims, cartCoords );
+    } else if ( ( skipFFT==1 ) || ( skip==1 ) ) {
+        fprintf(stderr, "Skipping data checking because some steps have been skipped.\n");
+    } else {
+        checkData( data, extent, domainSize, cartCoords, TOLERANCE, commAll );
+    }
 	
 	/* Print out computer readable (CSV) job result string */
 	if (amMaster(commAll))
