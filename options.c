@@ -14,7 +14,7 @@
 #include "options.h"
 
 
-int getOptions(int *argc, char ***argv, int *extent, int *decompType, int *use2DFFT, int *skip, int *skipFFT, int *printOut)
+int getOptions(int *argc, char ***argv, int *extent, int *decompType, int *use2DFFT, int *skip, int *skipFFT, int *targetLoopCount, int *printOut)
 {   /* Get command-line options */
 	
 	int c;
@@ -25,7 +25,7 @@ int getOptions(int *argc, char ***argv, int *extent, int *decompType, int *use2D
 	
 	
 	opterr = 0; /* Defined in unistd.h */
-	while ((c = getopt (*argc, *argv, "x:d:lnhfp")) != -1)
+	while ((c = getopt (*argc, *argv, "x:d:l:nhfLp")) != -1)
 	{
 		switch (c)
 		{
@@ -47,9 +47,14 @@ int getOptions(int *argc, char ***argv, int *extent, int *decompType, int *use2D
 				*use2DFFT = 1;
 			 }
 			 break;
-			 
-			/* -l prints the FFT library used */
-			case 'l':
+
+            /* -l sets the number of times we repeat the whole benchmark. */
+            case 'l':
+             *targetLoopCount = atoi(optarg);
+             break;
+
+			/* -L prints the FFT library used */
+			case 'L':
 			 printLib();
 			 exit(0);
 			 break;
@@ -109,9 +114,11 @@ void printOptionList()
 		   "                   1 - slab\n"
 		   "                   2 - rod\n"
 		   "                   3 - slab with 2D FFTs used on each slab\n"
+           "  -l<number>     Number of times to repeat the whole core process. \n"
 		   "  -f             Skips all FFT steps.\n"
 		   "  -n             Skips all FFT and communication steps.\n"
 		   "  -p             Prints data instead of checking.\n"
+           "  -L             Print which FFT library was used to build this. \n"
 		   "  -h             Prints this message.\n"
 		   );
 }

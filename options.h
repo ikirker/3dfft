@@ -7,5 +7,5 @@
  *
  */
 
-int getOptions(int *argc, char ***argv, int *extent, int *decompType, int *use2DFFT, int *skip, int *skipFFT, int *printOut);
+int getOptions(int *argc, char ***argv, int *extent, int *decompType, int *use2DFFT, int *skip, int *skipFFT, int *targetLoopCount, int *printOut);
 void printOptionList();
