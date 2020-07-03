@@ -91,7 +91,7 @@ int main (int argc, char ** argv) {
 			"Running MPI 3D FFT Benchmark with %d processors.\n"
 			" Problem size:  \t%dx%dx%d\n"
 			" Decomposition: \t%s: %dx%d\n"
-			" Each array:    \t%dx%dx%d\n"
+			" Each array:    \t%dx%dx%d (%d bytes)\n"
 			" Library:       \t%s\n"
 			" Using 2D FFT call: \t%s\n",
 			size,
@@ -99,6 +99,7 @@ int main (int argc, char ** argv) {
 			decompName,
 			decompDims[0],decompDims[1],
 			domainSize[1],domainSize[0],extent,
+            domainSize[1]*domainSize[0]*extent*sizeof(complexType),
 			FFT_NAME,
 			((use2DFFT==1)?"yes":"no")
 			);
@@ -177,7 +178,7 @@ int main (int argc, char ** argv) {
 	/********* Output and finalisation **********/
 	
     if ( printOut == 1 )
-    { /* If we're skipping bits or requesting it, print the data instead. */
+    { /* If we're requesting it, print the data instead. */
         printData( data, extent, domainSize, decompDims, cartCoords );
     } else if ( ( skipFFT==1 ) || ( skip==1 ) ) {
         if (amMaster(commAll)) {
